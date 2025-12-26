@@ -1,24 +1,34 @@
 import ipywidgets as widgets
 from IPython.display import display, clear_output
 import pandas as pd
-from typing import Literal
+import gspread
+from google.auth import default
+from typing import Literal, Optional
 
 
 class Jadwal:
     def __init__(
         self,
-        gspread_client,
+        client: Optional[object] = None,
         sort_method: Literal["default", "asc", "dsc"] = "default",
     ):
-        self.gc = gspread_client
+        """
+        Args:
+            client: (Optional) An authorized gspread client.
+                    If None, attempts to authenticate via Google Colab.
+            sort_method: Sort order for file list ('default', 'asc', 'dsc').
+        """
         self.sort_method = sort_method
 
-        # --- Public Properties (The "API") ---
+        if client:
+            self.gc = client
+        else:
+            self.gc = self._authenticate_colab()
+
+        # --- Public Properties ---
         self.spreadsheet = None
         self.sheet = None
         self.df = None
-
-        # --- Internal Data ---
         self.file_mapping = {}
 
         # --- UI Components ---
@@ -54,10 +64,38 @@ class Jadwal:
         self.file_dropdown.observe(self.on_file_change, names="value")
         self.sheet_dropdown.observe(self.on_sheet_change, names="value")
 
-        # --- Init ---
-        self.refresh_file_list()
+        if self.gc:
+            self.refresh_file_list()
+
+    def _authenticate_colab(self):
+        """Internal helper to handle Colab authentication automatically."""
+        try:
+            from google.colab import auth
+
+            print("🔐 Authenticating with Google Colab...", end="\r")
+            auth.authenticate_user()
+            creds, _ = default()
+            gc = gspread.authorize(creds)
+            print("✅ Authenticated successfully.      ")
+            return gc
+
+        except ImportError:
+            raise ImportError(
+                "❌ Could not import 'google.colab'. \n"
+                "You are likely running outside of Colab.\n"
+                "Please provide a gspread client manually:\n\n"
+                "   import gspread\n"
+                "   gc = gspread.service_account('path/to/creds.json')\n"
+                "   widget = Jadwal(client=gc)"
+            )
+        except Exception as e:
+            print(f"❌ Authentication failed: {e}")
+            return None
 
     def refresh_file_list(self):
+        if not self.gc:
+            return
+
         original_btn_text = self.refresh_btn.description
         self.refresh_btn.description = "Loading..."
         self.refresh_btn.disabled = True
@@ -129,14 +167,12 @@ class Jadwal:
 
                 if rows:
                     self.df = pd.DataFrame(rows[1:], columns=rows[0])
-
                     print(f"✅ Loaded {len(self.df)} rows.")
                     print("💡 Access data via: widget.df")
                     display(self.df.head())
                 else:
                     self.df = pd.DataFrame()
                     print("⚠️ This sheet is empty.")
-
             except Exception as e:
                 self.df = None
                 self.sheet = None
