@@ -1,8 +1,8 @@
 # ipyjadwal 📊
 
-[![PyPI version](https://badge.fury.io/py/ipyjadwal.svg)](https://badge.fury.io/py/ipyjadwal)
+[![PyPI version](https://badge.fury.io/py/ipyjadwal.svg?cache=v1)](https://badge.fury.io/py/ipyjadwal)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Python](https://img.shields.io/pypi/pyversions/ipyjadwal.svg)](https://pypi.org/project/ipyjadwal/)
+[![Python](https://img.shields.io/pypi/pyversions/ipyjadwal.svg?cache=v1)](https://pypi.org/project/ipyjadwal/)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 **ipyjadwal** (derived from the Arabic *Jadwal* جَدْوَل meaning "Table" or "Schedule") is a clean, interactive Jupyter widget for browsing Google Sheets directly inside **Google Colab** or **Jupyter Notebooks**.
