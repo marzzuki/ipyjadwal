@@ -5,7 +5,7 @@ setup(
     version="0.1.3",
     python_requires=">=3.7",
     description="A clean, interactive Google Sheet explorer for Colab (Jadwal)",
-    long_description=open("README.md").read() if "README.md" in globals() else "",
+    long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
     author="Mustafa Marzouk",
     license="MIT",
