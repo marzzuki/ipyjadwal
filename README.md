@@ -37,19 +37,40 @@ widget = ipyjadwal.Jadwal(gc)
 widget.show()
 ```
 
-For **Jupyter Notebooks** (local), you'll need to set up your Google credentials file:
+
+### Using Jupyter Notebooks (Local)
+
+When running **ipyjadwal** locally in a Jupyter Notebook, you’ll need to set up your Google service account credentials first.
+
+Start by authenticating with Google Sheets:
 
 ```python
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 import ipyjadwal
 
-scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
-creds = ServiceAccountCredentials.from_json_keyfile_name('credentials.json', scope)
+scope = [
+    'https://spreadsheets.google.com/feeds',
+    'https://www.googleapis.com/auth/drive'
+]
+creds = ServiceAccountCredentials.from_json_keyfile_name(
+    'credentials.json',
+    scope
+)
 gc = gspread.authorize(creds)
 
 widget = ipyjadwal.Jadwal(gc)
 widget.show()
+```
+
+Once the widget is loaded, you can work with the data directly:
+
+```python
+# Access the data as a pandas DataFrame
+my_data = widget.df
+
+# Write updates back to the Google Sheet using gspread
+widget.sheet.update_cell(1, 1, "Updated Value")
 ```
 
 
@@ -57,15 +78,21 @@ widget.show()
 
 - **🔍 Dropdown Interface**  
   Browse your Google Drive spreadsheets using a searchable dropdown menu.
-
+  
 - **📑 Instant Sheet Switching**  
   Automatically loads available worksheets when a file is selected.
 
 - **🐼 Pandas Preview**  
-  Instantly preview the head of the selected sheet as a Pandas DataFrame.
+  Instantly preview the head of the selected sheet as a DataFrame.
+  
+- **📊 Direct DataFrame Access**
+  Work with the full sheet data directly via `widget.df` for analysis and transformations.
+
+- **Write Back to Google Sheets**
+  Update cells or ranges directly using the exposed `gspread` sheet object.
 
 - **🔄 Refresh Capability**  
-  Reload your file list or sheet data with a single click.
+Reload your file list or sheet data with a>> single click.
 
 - **🎯 Zero Boilerplate**  
   No need to write repetitive code for browsing and switching between sheets.

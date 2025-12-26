@@ -12,8 +12,16 @@ class Jadwal:
     ):
         self.gc = gspread_client
         self.sort_method = sort_method
-        self.current_spreadsheet = None
+
+        # --- Public Properties (The "API") ---
+        self.spreadsheet = None
+        self.sheet = None
+        self.df = None
+
+        # --- Internal Data ---
         self.file_mapping = {}
+
+        # --- UI Components ---
         self.file_dropdown = widgets.Combobox(
             placeholder="Select a Spreadsheet...",
             description="<b>File:</b>",
@@ -28,29 +36,25 @@ class Jadwal:
         )
 
         self.refresh_btn = widgets.Button(
-            description="Refresh",
-            button_style="info",
+            description="Refresh", button_style="info", icon="refresh"
         )
 
         self.output = widgets.Output()
 
         self.ui = widgets.VBox(
             [
-                widgets.HBox(
-                    [
-                        self.file_dropdown,
-                        self.refresh_btn,
-                    ]
-                ),
+                widgets.HBox([self.file_dropdown, self.refresh_btn]),
                 self.sheet_dropdown,
                 self.output,
             ]
         )
 
+        # --- Bind Events ---
         self.refresh_btn.on_click(self.on_refresh_click)
         self.file_dropdown.observe(self.on_file_change, names="value")
         self.sheet_dropdown.observe(self.on_sheet_change, names="value")
 
+        # --- Init ---
         self.refresh_file_list()
 
     def refresh_file_list(self):
@@ -61,16 +65,9 @@ class Jadwal:
         try:
             files = self.gc.list_spreadsheet_files()
             if self.sort_method == "asc":
-                files = sorted(
-                    files,
-                    key=lambda x: x["name"],
-                )
+                files = sorted(files, key=lambda x: x["name"])
             elif self.sort_method == "dsc":
-                files = sorted(
-                    files,
-                    key=lambda x: x["name"],
-                    reverse=True,
-                )
+                files = sorted(files, key=lambda x: x["name"], reverse=True)
 
             self.file_mapping = {f["name"]: f["id"] for f in files}
             self.file_dropdown.options = list(self.file_mapping.keys())
@@ -93,6 +90,8 @@ class Jadwal:
 
         self.sheet_dropdown.disabled = True
         self.sheet_dropdown.options = []
+        self.sheet = None
+        self.df = None
 
         with self.output:
             clear_output()
@@ -100,16 +99,16 @@ class Jadwal:
 
             try:
                 file_id = self.file_mapping[filename]
-                self.current_spreadsheet = self.gc.open_by_key(file_id)
+                self.spreadsheet = self.gc.open_by_key(file_id)
 
-                worksheets = self.current_spreadsheet.worksheets()
-                sheet_name = [ws.title for ws in worksheets]
+                worksheets = self.spreadsheet.worksheets()
+                sheet_names = [ws.title for ws in worksheets]
 
-                self.sheet_dropdown.options = sheet_name
+                self.sheet_dropdown.options = sheet_names
                 self.sheet_dropdown.disabled = False
 
-                if sheet_name:
-                    self.sheet_dropdown.value = sheet_name[0]
+                if sheet_names:
+                    self.sheet_dropdown.value = sheet_names[0]
 
             except Exception as e:
                 print(f"❌ Error opening file: {e}")
@@ -117,7 +116,7 @@ class Jadwal:
     def on_sheet_change(self, change):
         sheet_name = change["new"]
 
-        if not sheet_name or not self.current_spreadsheet:
+        if not sheet_name or not self.spreadsheet:
             return
 
         with self.output:
@@ -125,16 +124,22 @@ class Jadwal:
             print(f"📊 Loading data from '{sheet_name}'...")
 
             try:
-                worksheet = self.current_spreadsheet.worksheet(sheet_name)
-                rows = worksheet.get_all_values()
+                self.sheet = self.spreadsheet.worksheet(sheet_name)
+                rows = self.sheet.get_all_values()
 
                 if rows:
-                    df = pd.DataFrame(rows[1:], columns=rows[0])
-                    print(f"✅ Loaded {len(df)} rows.")
-                    display(df.head())
+                    self.df = pd.DataFrame(rows[1:], columns=rows[0])
+
+                    print(f"✅ Loaded {len(self.df)} rows.")
+                    print("💡 Access data via: widget.df")
+                    display(self.df.head())
                 else:
+                    self.df = pd.DataFrame()
                     print("⚠️ This sheet is empty.")
+
             except Exception as e:
+                self.df = None
+                self.sheet = None
                 print(f"❌ Error reading sheet: {e}")
 
     def show(self):
