@@ -9,134 +9,97 @@
 
 It simplifies the workflow of selecting spreadsheets, switching sheets, and previewing DataFrames without writing repetitive boilerplate code.
 
-## 🚀 Quick Start
-
-### Installation
+## Installation
 
 ```bash
 pip install ipyjadwal
 ```
 
-### Basic Usage
-
-ipyjadwal handles the UI, but you must provide the authentication (standard for security reasons).
+## Usage
 
 ```python
-from google.colab import auth
-from google.auth import default
+import ipyjadwal
+
+widget = ipyjadwal.Jadwal()
+widget.show()
+
+# Access selected data as pandas DataFrame
+df = widget.df
+
+# Write updates back using gspread
+widget.sheet.update_cell(1, 1, "New Value")
+```
+
+For local Jupyter Notebooks, provide a gspread client:
+
+```python
 import gspread
 import ipyjadwal
 
-# 1. Authenticate with Google
-auth.authenticate_user()
-creds, _ = default()
-gc = gspread.authorize(creds)
-
-# 2. Launch the Jadwal widget
-widget = ipyjadwal.Jadwal(gc)
+gc = gspread.service_account("credentials.json")
+widget = ipyjadwal.Jadwal(client=gc)
 widget.show()
 ```
-
-
-### Using Jupyter Notebooks (Local)
-
-When running **ipyjadwal** locally in a Jupyter Notebook, you’ll need to set up your Google service account credentials first.
-
-Start by authenticating with Google Sheets:
-
-```python
-import gspread
-from oauth2client.service_account import ServiceAccountCredentials
-import ipyjadwal
-
-scope = [
-    'https://spreadsheets.google.com/feeds',
-    'https://www.googleapis.com/auth/drive'
-]
-creds = ServiceAccountCredentials.from_json_keyfile_name(
-    'credentials.json',
-    scope
-)
-gc = gspread.authorize(creds)
-
-widget = ipyjadwal.Jadwal(gc)
-widget.show()
-```
-
-Once the widget is loaded, you can work with the data directly:
-
-```python
-# Access the data as a pandas DataFrame
-my_data = widget.df
-
-# Write updates back to the Google Sheet using gspread
-widget.sheet.update_cell(1, 1, "Updated Value")
-```
-
 
 ## ✨ Features
 
-- **🔍 Dropdown Interface**  
-  Browse your Google Drive spreadsheets using a searchable dropdown menu.
-  
-- **📑 Instant Sheet Switching**  
-  Automatically loads available worksheets when a file is selected.
+- **🔍 Interactive Dropdown**  
+  Browse all your Google Drive spreadsheets through a clean, searchable dropdown interface.
 
-- **🐼 Pandas Preview**  
-  Instantly preview the head of the selected sheet as a DataFrame.
-  
-- **📊 Direct DataFrame Access**
-  Work with the full sheet data directly via `widget.df` for analysis and transformations.
+- **📑 Seamless Sheet Navigation**  
+  Automatically loads and displays all available worksheets when you select a spreadsheet—no manual loading required.
 
-- **Write Back to Google Sheets**
-  Update cells or ranges directly using the exposed `gspread` sheet object.
+- **🐼 Live DataFrame Preview**  
+  Instantly preview your data as a pandas DataFrame with automatic updates as you switch between sheets.
 
-- **🔄 Refresh Capability**  
-Reload your file list or sheet data with a>> single click.
+- **📊 Full Data Access**  
+  Access the complete sheet data via `widget.df` for analysis, transformations, and visualization.
+
+- **✏️ Full gspread Access**  
+  Access all gspread functionality via `widget.sheet` (e.g., update cells, append rows, format ranges).
+
+- **🔄 One-Click Refresh**  
+  Reload your file list or refresh sheet data with a single button click.
+
+- **🔀 Flexible Sorting**  
+  Sort spreadsheets by name (ascending/descending) or leave untouched to preserve Google Sheets' default order.
 
 - **🎯 Zero Boilerplate**  
-  No need to write repetitive code for browsing and switching between sheets.
+  Skip repetitive setup code—import, instantiate, and start exploring your data immediately.
 
 ## 🔧 Documentation
 
 ### API Reference
 
-#### `Jadwal(gc)`
+#### `Jadwal(client=None, sort_method="default")`
 
 Main widget class for browsing Google Sheets.
 
-**Parameters:**
-- `gc` (gspread.Client): An authorized gspread client instance
+**Parameters**
 
-**Methods:**
-- `show()`: Display the interactive widget
+- `client` (optional): An authorized gspread client. If `None`, attempts automatic authentication in Google Colab.
+- `sort_method`: `"default"` (default), `"asc"`, or `"dsc"` — Sort order for the file list.
 
-**Example:**
+**Properties**
 
-```python
-widget = ipyjadwal.Jadwal(gc)
-widget.show()
-```
+- `df`: pandas DataFrame containing the full data from the currently selected sheet.
+- `sheet`: gspread worksheet object for the currently selected sheet — use this to write back to Google Sheets.
 
-## 📄 License
+**Methods**
+
+- `show()`: Display the interactive widget.
+
+## Links
+
+- [PyPI Package](https://pypi.org/project/ipyjadwal/)
+- [GitHub Repository](https://github.com/marzzuki/ipyjadwal)
+- [Issue Tracker](https://github.com/marzzuki/ipyjadwal/issues)
+
+## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-
-## 📞 Support
-
-If you encounter any issues or have questions, please:
-- Open an issue on [GitHub Issues](https://github.com/yourusername/ipyjadwal/issues)
-- Check existing issues and discussions
-
-
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - Built with [gspread](https://github.com/burnash/gspread) for Google Sheets API
 - Powered by [ipywidgets](https://ipywidgets.readthedocs.io/) for interactive UI
-
-## 🔗 Links
-
-- [PyPI Package](https://pypi.org/project/ipyjadwal/)
-- [GitHub Repository](https://github.com/marzzuki/ipyjadwal/issues)
-- [Issue Tracker](https://github.com/marzzuki/ipyjadwal/issues)
