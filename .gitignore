@@ -1,0 +1,29 @@
+# --- Python Basics ---
+__pycache__/
+*.py[cod]
+*$py.class
+
+# --- Distribution / Packaging (The stuff you asked about) ---
+dist/
+build/
+*.egg-info/
+.eggs/
+
+# --- Virtual Environments ---
+venv/
+env/
+.env/
+.venv/
+
+# --- Jupyter / Colab Checkpoints ---
+.ipynb_checkpoints
+*/.ipynb_checkpoints/*
+
+# --- OS Generated Files ---
+.DS_Store
+Thumbs.db
+
+# --- IDE Settings (Optional, good practice) ---
+.vscode/
+.idea/
+.DS_Store
