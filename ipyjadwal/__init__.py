@@ -38,17 +38,14 @@ class Jadwal:
             ensure_option=True,
             layout={"width": "400px"},
         )
-
         self.sheet_dropdown = widgets.Dropdown(
             description="<b>Sheet:</b>",
             disabled=True,
             layout={"width": "400px"},
         )
-
         self.refresh_btn = widgets.Button(
             description="Refresh", button_style="info", icon="refresh"
         )
-
         self.output = widgets.Output()
 
         self.ui = widgets.VBox(
@@ -95,11 +92,7 @@ class Jadwal:
     def refresh_file_list(self):
         if not self.gc:
             return
-
-        original_btn_text = self.refresh_btn.description
-        self.refresh_btn.description = "Loading..."
         self.refresh_btn.disabled = True
-
         try:
             files = self.gc.list_spreadsheet_files()
             if self.sort_method == "asc":
@@ -111,72 +104,78 @@ class Jadwal:
             self.file_dropdown.options = list(self.file_mapping.keys())
         except Exception as e:
             with self.output:
-                print(f"❌ Error fetching files: {e}")
+                print(f"❌ List Error: {e}")
         finally:
-            self.refresh_btn.description = original_btn_text
             self.refresh_btn.disabled = False
 
     def on_refresh_click(self, b):
-        self.refresh_file_list()
-        if self.file_dropdown.value:
-            self.on_file_change({"new": self.file_dropdown.value})
-
-    def on_file_change(self, change):
-        filename = change["new"]
-        if not filename or filename not in self.file_mapping:
-            return
-
-        self.sheet_dropdown.disabled = True
-        self.sheet_dropdown.options = []
-        self.sheet = None
-        self.df = None
+        current_file = self.file_dropdown.value
+        current_sheet = self.sheet_dropdown.value
 
         with self.output:
-            clear_output()
-            print(f"📂 Opening '{filename}'...")
+            clear_output(wait=True)
+            print("🔄 Refreshing Drive list...")
+            self.refresh_file_list()
 
+        if current_file:
+            self._load_spreadsheet(current_file, last_sheet_to_restore=current_sheet)
+
+    def on_file_change(self, change):
+        if change["new"] and change["new"] in self.file_mapping:
+            self._load_spreadsheet(change["new"])
+
+    def _load_spreadsheet(self, filename, last_sheet_to_restore=None):
+        self.sheet_dropdown.unobserve(self.on_sheet_change, names="value")
+        self.sheet_dropdown.disabled = True
+
+        with self.output:
+            clear_output(wait=True)
+            print(f"📂 Syncing '{filename}'...")
             try:
                 file_id = self.file_mapping[filename]
+
+                print("   ↪️ Connecting to Google API...")
                 self.spreadsheet = self.gc.open_by_key(file_id)
 
+                print("   ↪️ Fetching worksheets...")
                 worksheets = self.spreadsheet.worksheets()
                 sheet_names = [ws.title for ws in worksheets]
 
                 self.sheet_dropdown.options = sheet_names
                 self.sheet_dropdown.disabled = False
 
-                if sheet_names:
+                if last_sheet_to_restore in sheet_names:
+                    self.sheet_dropdown.value = last_sheet_to_restore
+                elif sheet_names:
                     self.sheet_dropdown.value = sheet_names[0]
 
+                self.sheet_dropdown.observe(self.on_sheet_change, names="value")
+                self.on_sheet_change({"new": self.sheet_dropdown.value})
+
             except Exception as e:
-                print(f"❌ Error opening file: {e}")
+                print(f"❌ API Hang or Error: {e}")
+                self.sheet_dropdown.observe(self.on_sheet_change, names="value")
 
     def on_sheet_change(self, change):
         sheet_name = change["new"]
-
         if not sheet_name or not self.spreadsheet:
             return
 
         with self.output:
-            clear_output()
-            print(f"📊 Loading data from '{sheet_name}'...")
-
+            clear_output(wait=True)
+            print(f"📊 Loading worksheet: '{sheet_name}'...")
             try:
                 self.sheet = self.spreadsheet.worksheet(sheet_name)
                 rows = self.sheet.get_all_values()
-
                 if rows:
                     self.df = pd.DataFrame(rows[1:], columns=rows[0])
-                    print(f"✅ Loaded {len(self.df)} rows.")
-                    print("💡 Access data via: widget.df")
+                    print(f"✅ Success: {len(self.df)} rows loaded.")
                     display(self.df.head())
                 else:
                     self.df = pd.DataFrame()
-                    print("⚠️ This sheet is empty.")
+                    print("⚠️ Note: This sheet is empty.")
             except Exception as e:
-                self.df = None
-                self.sheet = None
-                print(f"❌ Error reading sheet: {e}")
+                print(f"❌ Worksheet Error: {e}")
 
     def show(self):
         display(self.ui)
