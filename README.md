@@ -47,8 +47,8 @@ widget.show()
 
 ## ✨ Features
 
-* **🔐 Auto Authentication**  
-  Automatically authenticates with Google using your provided credentials.
+* **🔐 Easy Google Auth (Colab-friendly)**  
+  No boilerplate setup in Google Colab, authentication just works out of the box.
 
 * **🔍 Spreadsheet Picker**  
   Select any Google Drive spreadsheet from a searchable dropdown.
