@@ -9,6 +9,10 @@
 
 It simplifies the workflow of selecting spreadsheets, switching sheets, and previewing DataFrames without writing repetitive boilerplate code.
 
+[![Watch the video](https://img.youtube.com/vi/XJFLbxHJgcs/maxresdefault.jpg)](https://youtu.be/XJFLbxHJgcs)
+
+### [Demo](https://youtu.be/XJFLbxHJgcs)
+
 ## Installation
 
 ```bash
