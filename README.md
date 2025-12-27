@@ -47,19 +47,19 @@ widget.show()
 
 ## ✨ Features
 
-* **🔐 Auto Authentication**
+* **🔐 Auto Authentication**  
   Automatically authenticates with Google using your provided credentials.
 
-* **🔍 Spreadsheet Picker**
+* **🔍 Spreadsheet Picker**  
   Select any Google Drive spreadsheet from a searchable dropdown.
 
-* **📑 Sheet Switching**
+* **📑 Sheet Switching**  
   Loads available worksheets automatically when a file is selected.
 
-* **🐼 Data Access**
+* **🐼 Data Access**  
   Access the sheet data as a pandas DataFrame via `widget.df`.
 
-* **✏️ gspread Access**
+* **✏️ gspread Access**  
   Use the raw gspread sheet object through `widget.sheet`.
 
 
