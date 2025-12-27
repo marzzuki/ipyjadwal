@@ -47,29 +47,21 @@ widget.show()
 
 ## ✨ Features
 
-- **🔍 Interactive Dropdown**  
-  Browse all your Google Drive spreadsheets through a clean, searchable dropdown interface.
+* **🔐 Auto Authentication**
+  Automatically authenticates with Google using your provided credentials.
 
-- **📑 Seamless Sheet Navigation**  
-  Automatically loads and displays all available worksheets when you select a spreadsheet—no manual loading required.
+* **🔍 Spreadsheet Picker**
+  Select any Google Drive spreadsheet from a searchable dropdown.
 
-- **🐼 Live DataFrame Preview**  
-  Instantly preview your data as a pandas DataFrame with automatic updates as you switch between sheets.
+* **📑 Sheet Switching**
+  Loads available worksheets automatically when a file is selected.
 
-- **📊 Full Data Access**  
-  Access the complete sheet data via `widget.df` for analysis, transformations, and visualization.
+* **🐼 Data Access**
+  Access the sheet data as a pandas DataFrame via `widget.df`.
 
-- **✏️ Full gspread Access**  
-  Access all gspread functionality via `widget.sheet` (e.g., update cells, append rows, format ranges).
+* **✏️ gspread Access**
+  Use the raw gspread sheet object through `widget.sheet`.
 
-- **🔄 One-Click Refresh**  
-  Reload your file list or refresh sheet data with a single button click.
-
-- **🔀 Flexible Sorting**  
-  Sort spreadsheets by name (ascending/descending) or leave untouched to preserve Google Sheets' default order.
-
-- **🎯 Zero Boilerplate**  
-  Skip repetitive setup code—import, instantiate, and start exploring your data immediately.
 
 ## 🔧 Documentation
 
