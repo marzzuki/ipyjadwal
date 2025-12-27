@@ -11,7 +11,7 @@ It simplifies the workflow of selecting spreadsheets, switching sheets, and prev
 
 [![Watch the video](https://img.youtube.com/vi/XJFLbxHJgcs/maxresdefault.jpg)](https://youtu.be/XJFLbxHJgcs)
 
-### [Demo](https://youtu.be/XJFLbxHJgcs)
+### [YouTube](https://youtu.be/XJFLbxHJgcs)
 
 ## Installation
 
