@@ -9,8 +9,8 @@
 
 It simplifies the workflow of selecting spreadsheets, switching sheets, and previewing DataFrames without writing repetitive boilerplate code.
 
-[![Watch the video](https://img.youtube.com/vi/XJFLbxHJgcs/maxresdefault.jpg)](https://youtu.be/XJFLbxHJgcs)
 
+https://github.com/user-attachments/assets/3c6ac9ab-730c-414d-a118-1efc7bdc1222
 ### [YouTube](https://youtu.be/XJFLbxHJgcs)
 
 ## Installation
